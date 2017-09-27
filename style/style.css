@@ -1,0 +1,20 @@
+.tabs {
+    padding: 25px;
+    display: inline-block;
+    width: 20%;
+    overflow: hidden;
+    height: 75px;
+    margin: 20px;
+    background: rgb(245, 245, 245);
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.scrollable {
+    overflow-x: auto;
+    height: 140px;
+    white-space: nowrap;
+}
+.none {
+    display:none;
+}
