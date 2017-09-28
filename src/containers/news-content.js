@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import Parser from 'html-react-parser';
 
 import axios from 'axios';
 import { API_KEY } from '../actions/index';
@@ -45,9 +46,7 @@ class NewsContent extends Component  {
     componentWillUnmount() {
         clearTimeout(time);
     }
-    compileHTML() {
-        return {__html: this.state.content}
-    }
+
 
     pinToFavourites() {
         this.setState({alreadyPinned:true, showNotification:true})
@@ -59,7 +58,7 @@ class NewsContent extends Component  {
         let alertDanger = {color:'red'};
         let navigate = {margin: "20px"};
         let pinButton = {float: 'right'};
-        let notify = {padding: '25px', position:'absolute', bottom:'20', right: '20', background:'green', color:'white'};
+        let notify = {padding: '25px', position:'absolute', bottom:'20px', right: '20px', background:'green', color:'white'};
         if(!this.props.state.news.length) {
             return (
                 <div>
@@ -92,8 +91,14 @@ class NewsContent extends Component  {
 
 
                 </div>
+                <div>
+                    {this.state.selected[0].hasOwnProperty('fields')? <img className="content-img" src={this.state.selected[0].fields.thumbnail} />: '' }
+                    <div>
+                        { this.state.content? Parser(this.state.content): '' }
+                    </div>
 
-                <div dangerouslySetInnerHTML={this.compileHTML()} />
+                </div>
+
                 {
                     this.state.showNotification?
                         <div style={notify}>The article has been pinned</div>: ''

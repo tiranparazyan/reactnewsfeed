@@ -5,6 +5,7 @@ import { Router, Link } from 'react-router'
 
 import InfiniteScroll from 'react-infinite-scroller';
 import { fetchNews } from '../actions/index';
+import { hasScrolled } from '../actions/scroll-action'
 
 let interval;
 
@@ -26,6 +27,7 @@ class NewsList extends Component {
     }
 
     componentWillMount() {
+        this.setState({currentPage: this.props.scroll.currentPage});
         if(!this.props.news.length) {
             this.props.fetchNews(this.state.currentPage)
                 .then(() => {
@@ -33,12 +35,15 @@ class NewsList extends Component {
                 })
         }
         else {
-            this.setState({news: this.props.news})
+            this.setState({news: this.props.news}, () => { window.scrollTo(0, this.props.scroll.scrolled)})
         }
 
     }
+
     componentWillUnmount() {
         clearInterval(interval);
+        this.props.hasScrolled(window.scrollY, this.state.currentPage);
+
     }
 
     loadMore() {
@@ -49,15 +54,15 @@ class NewsList extends Component {
         this.props.fetchNews(this.state.currentPage)
             .then(() => {
                 this.setState({news: this.props.news})
-                console.log(this.props.news)
+
             })
 
     }
-
     render() {
         if(!this.state.news.length) {
             return <div>Loading...</div>
         }
+
         return (
             <div>
 
@@ -90,6 +95,7 @@ class NewsList extends Component {
                                 loadMore={() => this.loadMore()}
                                 loader={<tr className="loader"><td>Loading ...</td></tr>}
                                 element="tbody"
+                                onScroll={() => this.handleScroll()}
                             >
                                 {this.state.news.map((value, key) => {
                                     return (<tr key={key}>
@@ -130,11 +136,11 @@ class NewsList extends Component {
 
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({ fetchNews }, dispatch)
+    return bindActionCreators({ fetchNews, hasScrolled }, dispatch)
 }
 
-function mapStateToProps({news, favorites}) {
-    return { news, favorites };
+function mapStateToProps({news, favorites, scroll}) {
+    return { news, favorites, scroll };
 }
 
 export default connect( mapStateToProps, mapDispatchToProps )(NewsList);
